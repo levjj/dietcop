@@ -70,12 +70,6 @@ public final class Context {
 					args == null ? new Object[0] : args));
 			newArgs.add(0, obj);
 			newArgs.add(0, next);
-			System.out.println("  " + m);
-			System.out.print("  args = ");
-			for (Object object : newArgs) {
-				System.out.print(object.getClass());
-			}
-			System.out.println();
 			return m.invoke(layer, newArgs.toArray());
 		}
 	}
@@ -83,7 +77,6 @@ public final class Context {
 	public static Object executeLayered(Object obj, Method method,
 			Object[] args, Callable<?> proceed) throws Exception {
 		Callable<?> current = proceed;
-		System.out.printf("[%s] %s\n", obj.getClass().getSimpleName(), method.toGenericString());
 		List<Class<?>> methodParameterTypes = Arrays.asList(method.getParameterTypes());
 		for (Layer l : layers) {
 			for (Method m : l.getClass().getDeclaredMethods()) {				
@@ -91,7 +84,6 @@ public final class Context {
 				for (Class<?> intf : obj.getClass().getInterfaces()) {
 					if (at != null && at.value().equals(intf) &&
 						method.getName().equals(m.getName())) {
-						System.out.printf("[%s] %s\n", at.value().getSimpleName(), m.toGenericString());
 						List<Class<?>> mParameterTypes = new ArrayList<Class<?>>(Arrays.asList(m.getParameterTypes()));
 						if (Callable.class.equals(mParameterTypes.remove(0)) &&
 							at.value().equals(mParameterTypes.remove(0)) &&
@@ -102,7 +94,6 @@ public final class Context {
 				}
 			}
 		}
-		System.out.println();
 		return current.call();
 	}
 }
