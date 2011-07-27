@@ -8,15 +8,17 @@
 	<property name="lib.test.dir" value="lib-test"/>
 	<property name="main.class" value="de.livoris.dietcop.example.Main"/>
 
-	<target name="all" depends="clean, test" />
+	<target name="all" depends="clean, test, dist, run" />
 
 	<target name="clean">
 		<delete dir="${classes.dir}" failonerror="false" />
+		<delete dir="${classes.test.dir}" failonerror="false" />
 		<delete dir="${distribution.dir}" failonerror="false" />
 	</target>
 
 	<target name="init">
 		<mkdir dir="${classes.dir}" />
+		<mkdir dir="${classes.test.dir}" />
 		<mkdir dir="${distribution.dir}"/>
 	</target>
 

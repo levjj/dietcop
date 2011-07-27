@@ -1,3 +1,4 @@
 bin
 .settings
 dist
+bin-test
