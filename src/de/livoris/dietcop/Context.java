@@ -13,26 +13,27 @@ import de.livoris.dietcop.Layer.AppliesTo;
 
 public final class Context {
 	
-	private static List<Layer> layers = new LinkedList<Layer>();
+	private static ThreadLocal<List<Layer>> activeLayers = 
+	    new ThreadLocal<List<Layer>>() {
+	    	@Override
+			protected List<Layer> initialValue() {
+	    		return new LinkedList<Layer>();
+	    }};
 
 	public static interface Evaluator {
 		void eval(Runnable block);
 	}
 	
-	public static Evaluator with(final Class<? extends Layer>... layerClasses) {
+	public static Evaluator with(final Layer... layers) {
 		return new Evaluator() {
 			@Override
 			public void eval(Runnable block) {
-				List<Layer> oldLayers = new LinkedList<Layer>(layers);
+				List<Layer> oldLayers = new LinkedList<Layer>(activeLayers.get());
 				try {
-					for (Class<? extends Layer> cls : layerClasses) {
-						layers.add(cls.newInstance());
-					}
+					activeLayers.get().addAll(Arrays.asList(layers));
 					block.run();
-				} catch (Exception e) {
-					e.printStackTrace();
 				} finally {
-					layers = oldLayers;
+					activeLayers.set(oldLayers);
 				}
 			}
 		};
@@ -67,12 +68,13 @@ public final class Context {
 
 	private static Object executeLayered(final Object obj, final Method method, final Object[] args) throws Exception {
 		Callable<Object> current = new Callable<Object>() {
+			@Override
 			public Object call() throws Exception {
 				return method.invoke(obj, args);
 			}
 		};
 		List<Class<?>> methodParameterTypes = Arrays.asList(method.getParameterTypes());
-		for (Layer l : layers) {
+		for (Layer l : activeLayers.get()) {
 			for (Method m : l.getClass().getDeclaredMethods()) {
 				AppliesTo at = m.getAnnotation(AppliesTo.class);
 				for (Class<?> intf : obj.getClass().getInterfaces()) {

@@ -73,7 +73,7 @@ in a *Java Runnable* and execute it **with** a certain set of layers.
 
 	System.out.println(person.getName()); // Will only print the name
 	
-	with(SuffixLayer.class).eval(new Runnable() {
+	with(new SuffixLayer()).eval(new Runnable() {
 	  public void run() {
 	    System.out.println(person.getName()); // Will also print the suffix
 	  }

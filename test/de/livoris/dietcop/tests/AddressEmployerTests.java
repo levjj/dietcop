@@ -18,25 +18,25 @@ import de.livoris.dietcop.example.PersonImpl;
 public class AddressEmployerTests {
 
 	private Employer acme;
-	private Person bernd;
+	private Person john;
 
 	@Before
 	public void setUp() throws Exception {
 		acme = wrap(new EmployerImpl("ACME Inc.", "100 Main St"));
-		bernd = wrap(new PersonImpl("Bernd", "123 Fake St", acme));
+		john = wrap(new PersonImpl("John", "123 Fake St", acme));
 	}
 	
 	@Test
 	public void testNormal() {
-		assertEquals("Name: Bernd", bernd.toString());
+		assertEquals("Name: John", john.toString());
 	}
 	
 	
 	@Test
 	public void testAddress() {
-		with(AddressLayer.class).eval(new Runnable() {
+		with(new AddressLayer()).eval(new Runnable() {
 			public void run() {
-				assertEquals("Name: Bernd; Address: 123 Fake St", bernd.toString());
+				assertEquals("Name: John; Address: 123 Fake St", john.toString());
 			}
 		});
 	}
@@ -44,18 +44,42 @@ public class AddressEmployerTests {
 	
 	@Test
 	public void testEmployer() {
-		with(EmploymentLayer.class).eval(new Runnable() {
+		with(new EmploymentLayer()).eval(new Runnable() {
 			public void run() {
-		assertEquals("Name: Bernd; [Employer] Name: ACME Inc.", bernd.toString());
+		assertEquals("Name: John; [Employer] Name: ACME Inc.", john.toString());
 			}
 		});
 	}
 	
 	@Test
 	public void testAddressEmployer() {
-		with(AddressLayer.class, EmploymentLayer.class).eval(new Runnable() {
+		with(new AddressLayer(), new EmploymentLayer()).eval(new Runnable() {
 			public void run() {
-		assertEquals("Name: Bernd; Address: 123 Fake St; [Employer] Name: ACME Inc.; Address: 100 Main St", bernd.toString());
+		assertEquals("Name: John; Address: 123 Fake St; [Employer] Name: ACME Inc.; Address: 100 Main St", john.toString());
+			}
+		});
+	}
+	
+	@Test
+	public void testAddressOnAndOff() {
+		assertEquals("Name: John", john.toString());
+		with(new AddressLayer()).eval(new Runnable() {
+			public void run() {
+				assertEquals("Name: John; Address: 123 Fake St", john.toString());
+			}
+		});
+		assertEquals("Name: John", john.toString());
+	}
+	
+	@Test
+	public void testNested() {
+		with(new AddressLayer()).eval(new Runnable() {
+			public void run() {
+				with(new EmploymentLayer()).eval(new Runnable() {
+					public void run() {
+						assertEquals("Name: John; Address: 123 Fake St; [Employer] Name: ACME Inc.; Address: 100 Main St", john.toString());
+					}
+				});
 			}
 		});
 	}

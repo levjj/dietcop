@@ -1,12 +1,12 @@
 <project name="TheCalculatorProtocol" default="all" basedir=".">
-	<property name="src.dir" value="src"/>
-	<property name="classes.dir" value="bin"/>
-	<property name="distribution.dir" value="dist"/>
-	
-	<property name="src.test.dir" value="test"/>
-	<property name="classes.test.dir" value="bin-test"/>
-	<property name="lib.test.dir" value="lib-test"/>
-	<property name="main.class" value="de.livoris.dietcop.example.Main"/>
+	<property name="src.dir" value="src" />
+	<property name="classes.dir" value="bin" />
+	<property name="distribution.dir" value="dist" />
+
+	<property name="src.test.dir" value="test" />
+	<property name="classes.test.dir" value="bin-test" />
+	<property name="lib.test.dir" value="lib-test" />
+	<property name="main.class" value="de.livoris.dietcop.example.Main" />
 
 	<target name="all" depends="clean, test, dist, run" />
 
@@ -19,41 +19,41 @@
 	<target name="init">
 		<mkdir dir="${classes.dir}" />
 		<mkdir dir="${classes.test.dir}" />
-		<mkdir dir="${distribution.dir}"/>
+		<mkdir dir="${distribution.dir}" />
 	</target>
 
 	<target name="compile" depends="init">
 		<javac destdir="${classes.dir}" listfiles="true">
-			<src path="${src.dir}"/>
+			<src path="${src.dir}" />
 		</javac>
 	</target>
-	
+
 	<target name="compile-tests" depends="compile">
 		<javac destdir="${classes.test.dir}" listfiles="true">
 			<classpath>
-				<pathelement location="${classes.dir}"/>
-				<pathelement location="${lib.test.dir}/junit4.jar"/>
+				<pathelement location="${classes.dir}" />
+				<pathelement location="${lib.test.dir}/junit4.jar" />
 			</classpath>
-			<src path="${src.test.dir}"/>
+			<src path="${src.test.dir}" />
 		</javac>
 	</target>
-	
+
 	<target name="test" depends="compile-tests">
 		<junit printsummary="yes" haltonfailure="yes">
 			<formatter type="plain" usefile="false" />
 			<classpath>
-				<pathelement location="${classes.dir}"/>
-				<pathelement location="${classes.test.dir}"/>
-				<pathelement location="${lib.test.dir}/junit4.jar"/>
+				<pathelement location="${classes.dir}" />
+				<pathelement location="${classes.test.dir}" />
+				<pathelement location="${lib.test.dir}/junit4.jar" />
 			</classpath>
 			<batchtest fork="yes">
 				<fileset dir="${classes.test.dir}">
-					<include name="**/*Tests.class"/>
+					<include name="**/*Tests.class" />
 				</fileset>
 			</batchtest>
 		</junit>
 	</target>
-	
+
 	<target name="dist" depends="compile">
 		<jar destfile="${distribution.dir}/dietcop.jar">
 			<fileset dir="${classes.dir}">
@@ -62,7 +62,7 @@
 			</fileset>
 		</jar>
 	</target>
-	
+
 	<target name="dist-tests" depends="compile">
 		<jar destfile="${distribution.dir}/dietcop-tests.jar">
 			<fileset dir="${classes.dir}">
@@ -72,7 +72,7 @@
 				<include name="de/livoris/dietcop/**" />
 			</fileset>
 			<manifest>
-				<attribute name="Main-Class" value="${main.class}"/>
+				<attribute name="Main-Class" value="${main.class}" />
 			</manifest>
 		</jar>
 	</target>
