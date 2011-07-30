@@ -66,16 +66,20 @@ The last step is to execute the application code. Direct method calls
 will not be affected by layers, so all method invocation should go
 through a proxy which is can be acquired by using the **wrap** method.
 
-	Person person = wrap(new PersonImpl("John Doe", "PhD");
+	Person person = wrap(new PersonImpl("John Doe", "PhD"));
+
+The following statement will just print the name in the normal way
+without layers.
+
+	System.out.println(person.getName());
 
 The activation of layers is then done by putting the context-dependent code
-in a *Java Runnable* and execute it **with** a certain set of layers.
-
-	System.out.println(person.getName()); // Will only print the name
+in a *Java Runnable* and execute it **with** a certain set of layers. The
+following code will not only display the name but also the suffix.
 	
 	with(new SuffixLayer()).eval(new Runnable() {
 	  public void run() {
-	    System.out.println(person.getName()); // Will also print the suffix
+	    System.out.println(person.getName());
 	  }
 	}
 
