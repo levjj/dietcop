@@ -34,7 +34,7 @@ public class AddressEmployerTests {
 	
 	@Test
 	public void testAddress() {
-		with(AddressLayer.class, new Runnable() {
+		with(AddressLayer.class).eval(new Runnable() {
 			public void run() {
 				assertEquals("Name: Bernd; Address: 123 Fake St", bernd.toString());
 			}
@@ -44,7 +44,7 @@ public class AddressEmployerTests {
 	
 	@Test
 	public void testEmployer() {
-		with(EmploymentLayer.class, new Runnable() {
+		with(EmploymentLayer.class).eval(new Runnable() {
 			public void run() {
 		assertEquals("Name: Bernd; [Employer] Name: ACME Inc.", bernd.toString());
 			}
@@ -53,7 +53,7 @@ public class AddressEmployerTests {
 	
 	@Test
 	public void testAddressEmployer() {
-		with(AddressLayer.class, EmploymentLayer.class, new Runnable() {
+		with(AddressLayer.class, EmploymentLayer.class).eval(new Runnable() {
 			public void run() {
 		assertEquals("Name: Bernd; Address: 123 Fake St; [Employer] Name: ACME Inc.; Address: 100 Main St", bernd.toString());
 			}

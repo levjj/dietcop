@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -16,55 +15,40 @@ public final class Context {
 	
 	private static List<Layer> layers = new LinkedList<Layer>();
 
-	public static void with(Class<? extends Layer> layerClass, Runnable runnable) {
-		Collection<Class<? extends Layer>> list = new ArrayList<Class<? extends Layer>>();
-		list.add(layerClass);
-		with(list, runnable);
+	public static interface Evaluator {
+		void eval(Runnable block);
 	}
-
-	public static void with(Class<? extends Layer> layerClass1,
-			Class<? extends Layer> layerClass2, Runnable runnable) {
-		Collection<Class<? extends Layer>> list = new ArrayList<Class<? extends Layer>>();
-		list.add(layerClass1);
-		list.add(layerClass2);
-		with(list, runnable);
-	}
-
-	public static void with(Collection<Class<? extends Layer>> layerClasses,
-			Runnable runnable) {
-		Collection<Layer> newLayers = new LinkedList<Layer>();
-		try {
-			for (Class<? extends Layer> cls : layerClasses) {
-				newLayers.add(cls.newInstance());
+	
+	public static Evaluator with(final Class<? extends Layer>... layerClasses) {
+		return new Evaluator() {
+			@Override
+			public void eval(Runnable block) {
+				List<Layer> oldLayers = new LinkedList<Layer>(layers);
+				try {
+					for (Class<? extends Layer> cls : layerClasses) {
+						layers.add(cls.newInstance());
+					}
+					block.run();
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					layers = oldLayers;
+				}
 			}
-			layers.addAll(newLayers);
-			runnable.run();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			for (Layer layer : newLayers) {
-				layers.remove(layer);
-			}
-		}
+		};
 	}
 
 	@SuppressWarnings("unchecked")
 	public static <T> T wrap(final T object) {
-		InvocationHandler handler = new InvocationHandler() {
-			@Override
-			public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
-				return executeLayered(object, method, args,
-					new Callable<Object>() {
-						public Object call() throws Exception {
-							return method.invoke(object, args);
-						}
-				});
-			}
-		};
 		return (T) Proxy.newProxyInstance(
-				object.getClass().getClassLoader(),
-				object.getClass().getInterfaces(),
-				handler);
+			object.getClass().getClassLoader(),
+			object.getClass().getInterfaces(),
+			new InvocationHandler() {
+				@Override
+				public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+					return executeLayered(object, method, args);
+				}
+			});
 	}
 
 	private static Callable<Object> layer(final Layer layer,
@@ -81,9 +65,12 @@ public final class Context {
 		};
 	}
 
-	private static Object executeLayered(Object obj, Method method,
-			Object[] args, Callable<?> proceed) throws Exception {
-		Callable<?> current = proceed;
+	private static Object executeLayered(final Object obj, final Method method, final Object[] args) throws Exception {
+		Callable<Object> current = new Callable<Object>() {
+			public Object call() throws Exception {
+				return method.invoke(obj, args);
+			}
+		};
 		List<Class<?>> methodParameterTypes = Arrays.asList(method.getParameterTypes());
 		for (Layer l : layers) {
 			for (Method m : l.getClass().getDeclaredMethods()) {

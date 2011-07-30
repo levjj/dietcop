@@ -11,19 +11,19 @@ public class Main {
 		
 		System.out.println(bernd.toString());
 		
-		with(AddressLayer.class, new Runnable() {
+		with(AddressLayer.class).eval(new Runnable() {
 			public void run() {
 				System.out.println(bernd.toString());
 			}
 		});
 		
-		with(AddressLayer.class, EmploymentLayer.class, new Runnable() {
+		with(EmploymentLayer.class).eval(new Runnable() {
 			public void run() {
 				System.out.println(bernd.toString());
 			}
 		});
 
-		with(EmploymentLayer.class, new Runnable() {
+		with(AddressLayer.class, EmploymentLayer.class).eval(new Runnable() {
 			public void run() {
 				System.out.println(bernd.toString());
 			}
