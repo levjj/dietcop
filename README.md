@@ -114,8 +114,11 @@ Acknowledgement
 
 This project is inspired by the [Context-oriented programming][1] features in
 [ContextJ*][4] and [JCop][2] and the AOP implementation of [SpringAOP][3].
+DietCOP is motivated by the work of Guido Salvaneschi on seamless toolchain
+integration for context-oriented programming with [JavaCtx][5].
 
 [1]: http://www.jot.fm/issues/issue_2008_03/article4/
 [2]: https://www.hpi.uni-potsdam.de/hirschfeld/trac/Cop/wiki/JCop
 [3]: http://static.springsource.org/spring/docs/2.5.x/reference/aop.html
 [4]: http://soft.vub.ac.be/~pcostanz/contextj.html
+[5]: http://home.dei.polimi.it/salvaneschi/software/javactx/javactx.html
