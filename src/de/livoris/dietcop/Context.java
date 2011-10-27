@@ -42,22 +42,18 @@ public final class Context {
 			object.getClass().getInterfaces(),
 			new InvocationHandler() {
 				@Override
-				public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-					return executeLayered(object, method, args);
+				public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
+					Callable<Object> top = new Callable<Object>() {
+						@Override
+						public Object call() throws Exception {
+							return method.invoke(object, args);
+						}
+					};
+					for (Layer layer : activeLayers.get()) {
+						top = layer.chain(object, method, args, top);
+					}
+					return top.call();
 				}
 			});
-	}
-
-	private static Object executeLayered(final Object obj, final Method method, final Object[] args) throws Exception {
-		Callable<Object> top = new Callable<Object>() {
-			@Override
-			public Object call() throws Exception {
-				return method.invoke(obj, args);
-			}
-		};
-		for (Layer layer : activeLayers.get()) {
-			top = layer.chain(obj, method, args, top);
-		}
-		return top.call();
 	}
 }
