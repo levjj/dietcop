@@ -12,10 +12,10 @@ import java.util.concurrent.Callable;
 public abstract class Layer {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.METHOD)
-	public static @interface AppliesTo {
+	protected static @interface AppliesTo {
 		Class<?> value();
 	}
-	
+
 	private Callable<Object> layer(final Callable<?> next, final Object obj, final Method layerMethod, final Object[] args) {
 		return new Callable<Object>() {
 			@Override

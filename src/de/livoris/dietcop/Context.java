@@ -10,18 +10,16 @@ import java.util.concurrent.Callable;
 
 
 public final class Context {
-	
-	private static ThreadLocal<List<Layer>> activeLayers = 
-	    new ThreadLocal<List<Layer>>() {
-	    	@Override
-			protected List<Layer> initialValue() {
-	    		return new LinkedList<Layer>();
-	    }};
+
+	private static ThreadLocal<List<Layer>> activeLayers = new ThreadLocal<List<Layer>>() {
+	    @Override
+		protected List<Layer> initialValue() { return new LinkedList<Layer>(); }
+	};
 
 	public static interface Evaluator {
 		void eval(Runnable block);
 	}
-	
+
 	public static Evaluator with(final Layer... layers) {
 		return new Evaluator() {
 			@Override
@@ -51,7 +49,7 @@ public final class Context {
 	}
 
 	private static Object executeLayered(final Object obj, final Method method, final Object[] args) throws Exception {
-		Callable<Object> top = new Callable<Object>() {		
+		Callable<Object> top = new Callable<Object>() {
 			@Override
 			public Object call() throws Exception {
 				return method.invoke(obj, args);
